@@ -1,21 +1,30 @@
 name: Deploy to staging
 
 on:
-    push:
-        branches:
-            - main
+  push:
+    branches:
+      - main
 
 jobs:
   redeploy_everything:
-    name: Deploying everything to the staging cluster
     runs-on: ubuntu-latest
     steps:
-      - name: SSH Into server
+
+      - name: Prepare SSH
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/ssh_key
-          chmod 600 ~/ssh_key
-          ssh -i ~/ssh_key ubuntu@13.233.146.20 << 'EOF'
-            cd monorepo-aws/ && git pull
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Add SSH host to known_hosts
+        run: |
+          ssh-keyscan -H 13.233.146.20 >> ~/.ssh/known_hosts
+
+      - name: SSH & Deploy
+        run: |
+          ssh -i ~/.ssh/id_rsa ubuntu@13.233.146.20 << 'EOF'
+            cd monorepo-aws/
+            git pull
             pnpm install
             pnpm run build
             pnpm restart fe-server
