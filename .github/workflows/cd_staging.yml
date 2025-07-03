@@ -3,9 +3,8 @@ name: Deploy to staging
 on:
     push:
         branches:
-            -"main"
+            - main
 
-            
 jobs:
   redeploy_everything:
     name: Deploying everything to the staging cluster
