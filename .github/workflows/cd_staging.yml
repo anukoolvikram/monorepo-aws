@@ -25,10 +25,9 @@ jobs:
             ssh -i ~/.ssh/id_rsa ubuntu@13.233.146.20 << 'EOF'
             cd monorepo-aws/
             git pull
-            # Install pnpm if not present
-            if ! command -v pnpm &> /dev/null; then
-                npm install -g pnpm
-            fi
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
+            echo "Installing Dependencies..."
             pnpm install
             pnpm run build
             pnpm restart fe-server
