@@ -6,7 +6,7 @@ export default async function Home() {
   return (
     <div>
       <h1>Welcome to anukool.info</h1>
-      <h2>User List:</h2>
+      <h2>Our Users:</h2>
       <ul>
         {users.map((user) => (
           <li key={user.id}>
