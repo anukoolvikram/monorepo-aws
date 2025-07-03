@@ -1,0 +1,36 @@
+name: Deploy to staging
+
+on:
+  push:
+    branches:
+      [main]
+
+jobs:
+  redeploy_everything:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Prepare SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" &> ~/ssh_key
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Add SSH host to known_hosts
+        run: |
+          ssh-keyscan -H 13.233.146.20 >> ~/.ssh/known_hosts
+
+      - name: SSH & Deploy
+        run: |
+            ssh -i ~/ssh_key ubuntu@13.233.146.20 << 'EOF'
+            cd monorepo-aws/
+            git pull
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
+            echo "Installing Dependencies..."
+            pnpm install
+            pnpm run build
+            pm2 restart fe-server
+            pm2 restart http-server
+            pm2 restart ws-server
+            EOF
