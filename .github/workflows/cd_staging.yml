@@ -30,7 +30,10 @@ jobs:
             echo "Installing Dependencies..."
             pnpm install
             pnpm run build
-            pnpm restart fe-server
-            pnpm restart http-server
-            pnpm restart ws-server
+            pkill -f 'node .*fe-server' || true
+            pnpm run start:fe-server
+            pkill -f 'node .*http-server' || true
+            pnpm run start:http-server
+            pkill -f 'node .*ws-server' || true
+            pnpm run start:ws-server
             EOF
