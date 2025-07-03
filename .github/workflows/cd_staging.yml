@@ -22,12 +22,16 @@ jobs:
 
       - name: SSH & Deploy
         run: |
-          ssh -i ~/.ssh/id_rsa ubuntu@13.233.146.20 << 'EOF'
+            ssh -i ~/.ssh/id_rsa ubuntu@13.233.146.20 << 'EOF'
             cd monorepo-aws/
             git pull
+            # Install pnpm if not present
+            if ! command -v pnpm &> /dev/null; then
+                npm install -g pnpm
+            fi
             pnpm install
             pnpm run build
             pnpm restart fe-server
             pnpm restart http-server
             pnpm restart ws-server
-          EOF
+            EOF
